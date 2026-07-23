@@ -26,10 +26,12 @@ jobs:
       - name: Start Android TV Emulator & Tunnel
         uses: reactivecircus/android-emulator-runner@v2
         with:
-          api-level: 30
-          target: google_apis
+          api-level: 29
+          target: default
           arch: x86_64
           profile: tv_720p
+          avd-launch-timeout: 600
+          disable-animations: true
           script: |
             echo "Virtual Android TV successfully boot ho chuka hai!"
             
@@ -41,6 +43,6 @@ jobs:
             echo "Ngrok tunnel establish ki ja rahi hai..."
             ngrok tcp 5555 &
             
-            # Connection zinda rakhne ke liye sleep
+            # Connection zinda rakhne ke liye sleep (2 ghante tak session active rahega)
             echo "Virtual TV is ready for remote access!"
             sleep 7200
