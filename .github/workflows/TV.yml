@@ -1,0 +1,48 @@
+name: Remote Virtual Android TV (ADB + Ngrok)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  virtual-tv:
+    runs-on: macos-latest
+    timeout-minutes: 120 # 2 ghante tak session zinda rahega
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Setup Java JDK
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+
+      - name: Start Android TV Emulator
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 30
+          target: google_apis
+          arch: x86_64
+          profile: tv_720p # Android TV UI profile
+          coroutine-timeout: 60
+          script: |
+            echo "Virtual Android TV successfully start ho gaya hai!"
+            # ADB ko network port 5555 par listen karwayein
+            adb tcpip 5555
+            
+            # Ngrok install karein (agar available na ho)
+            brew install ngrok/core/ngrok
+            
+            # Free Ngrok token ke bina port forward karne ke liye (ya aap apna ngrok token bhi daal sakte hain)
+            echo "Ngrok tunnel establish ki ja rahi hai..."
+            ngrok tcp 5555 &
+            
+            # Workflow ko zinda rakhne ke liye taaki aap connect kar sakein
+            echo "Virtual TV is ready for manual testing!"
+            sleep 7200
